@@ -20,38 +20,48 @@ class AnalyzerService:
         return full_text
 
     def answer_query(self, document_txt: str, query: str) -> str:
-        prompt = f"""Human: You are a helpful assistant.
-
-                    Answer the question below using the provided document as your primary source. If the document contains a clear answer, use it.
-
-                    If the document does not contain a direct answer but the topic is mentioned or discussed, you may use your general knowledge to answer the question — but you should still ground your response in the context of the document when possible.
-
-                    If the topic is completely unrelated to the document, respond with:
-                    "The document does not contain the answer."
-
-                    Document:
-                    {document_txt}
+        
+        prompt = f"""You are a helpful assistant.
+                    You must answer the following question using the information provided in the document below.
+                    If the document does not contain any of the information needed to answer the question, respond with:
+                    'The document does not contain the answer.'
 
                     Question: {query}
 
-                    Assistant:"""
-        
-        response = self.bedrock_runtime.invoke_model(
-            modelId="anthropic.claude-v2:1",
-            body=json.dumps({
-                "prompt": prompt,
-                "max_tokens_to_sample": 700,
-                "temperature": 0.5,
-                "top_k": 250,
-                "top_p": 1,
-                "stop_sequences": ["\n\nHuman:"]
-            }),
-            contentType="application/json",
-            accept="application/json"
-        )
+                    Document: {document_txt}
+                    """
 
         
-        response_body = json.loads(response['body'].read())
-        print(response_body)
-        summary = response_body['completion']
-        return summary
+        prompt_config = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 500,
+            "temperature": 0.5,
+            "top_k": 250,
+            "top_p": 0.99,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt,
+                        },
+                    ],
+                }
+            ],
+        }
+
+
+        body = json.dumps(prompt_config)
+
+        modelId = "anthropic.claude-3-haiku-20240307-v1:0"
+        accept = "application/json"
+        contentType = "application/json"
+
+        response = self.bedrock_runtime.invoke_model(
+            body=body, modelId=modelId, accept=accept, contentType=contentType
+        )
+        response_body = json.loads(response.get("body").read())
+
+        results = response_body.get("content")[0].get("text")
+        return results
