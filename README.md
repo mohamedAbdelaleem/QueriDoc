@@ -16,11 +16,10 @@
 - [AWS Tools Used](#aws-tools-used)
 - [Architecture of the Project](#architecture-of-the-project)
 - [Installation Steps](#installation-steps)
-- [Monitoring](#monitoring)
 
 ---
 
-## ✨ Features
+## Features
 
 - Upload a document and ask a question about its content.
 - Responses are context-aware and grounded in the uploaded document.
@@ -30,7 +29,7 @@
 
 ---
 
-## ☁️ AWS Tools Used
+## AWS Tools Used
 
 - **AWS Lambda**: Runs the backend logic in a serverless environment.
 - **Amazon API Gateway**: Routes user requests to the Lambda function.
@@ -39,7 +38,7 @@
 
 ---
 
-## 🏗 Architecture of the Project
+## Architecture of the Project
 
 Below is the architecture diagram that shows how the system works:
 
@@ -55,7 +54,7 @@ Below is the architecture diagram that shows how the system works:
 
 ---
 
-## 🛠 Installation Steps
+## Installation Steps
 
 ### 1. Clone the Repository
 
