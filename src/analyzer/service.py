@@ -1,4 +1,4 @@
-import fitz 
+import pdfplumber
 import boto3
 import json
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -11,19 +11,22 @@ class AnalyzerService:
 
     def extract_document_text(self, document: InMemoryUploadedFile) -> str:
         full_text = ""
-
+        print("Begin")
         document.seek(0)
-        with fitz.open(stream=document.read(), filetype="pdf") as doc:
-            for page in doc:
-                full_text += page.get_text() + "\n"
+        with pdfplumber.open(document) as doc:
+            for page in doc.pages:
+                full_text += page.extract_text() or ''  # Avoid NoneType errors
+                full_text += "\n"
         
+        print("End")
         return full_text
 
     def answer_query(self, document_txt: str, query: str) -> str:
         
         prompt = f"""You are a helpful assistant.
                     You must answer the following question using the information provided in the document below.
-                    If the document does not contain any of the information needed to answer the question, respond with:
+                    The answer may not directly be in the document, use the information in the document to provide a helpful answer.
+                    If the document does not contain any of the information required to answer the question, respond with:
                     'The document does not contain the answer.'
 
                     Question: {query}

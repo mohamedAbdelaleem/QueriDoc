@@ -17,7 +17,7 @@ class AnalyzerView(APIView):
 
         service = AnalyzerService()
         document_txt = service.extract_document_text(serializer.validated_data["document"])
-        print(document_txt[:100])
+        print(len(document_txt))
         answer = service.answer_query(document_txt, serializer.validated_data["query"])
         return Response(data={"answer": answer})
 
